@@ -14,6 +14,7 @@ node -v => >= v14.0.0
 XCode + Simulator installed
 
 Then run in the root directory:
+```
 yarn
 
 yarn react-native link
@@ -21,3 +22,4 @@ yarn react-native link
 npx pod-install
 
 npx react-native run-ios
+```
