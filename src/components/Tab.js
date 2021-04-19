@@ -1,8 +1,9 @@
 import React, {useRef} from 'react';
 import styled from 'styled-components/native';
-import {Transition, Transitioning} from 'react-native-reanimated';
 import {theme} from '../services/Common/theme';
+import {Transition, Transitioning} from 'react-native-reanimated';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 const icons = {
   About: (
     <MaterialIcon
@@ -70,6 +71,20 @@ const icons = {
   WalletFocused: (
     <MaterialIcon
       name="account-balance-wallet"
+      size={24}
+      color={theme.COLORS.BOTTOM_TAB_ICON_FOCUSED}
+    />
+  ),
+  MyStats: (
+    <IonIcon
+      name="analytics-sharp"
+      size={24}
+      color={theme.COLORS.BOTTOM_TAB_NOT_ICON_FOCUSED}
+    />
+  ),
+  MyStatsFocused: (
+    <IonIcon
+      name="analytics-sharp"
       size={24}
       color={theme.COLORS.BOTTOM_TAB_ICON_FOCUSED}
     />

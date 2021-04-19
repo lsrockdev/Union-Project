@@ -1,6 +1,7 @@
 import React from 'react';
 import Ripple from '../components/Ripple';
 import {theme} from '../services/Common/theme';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import {Text, View, StyleSheet, FlatList} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
@@ -10,21 +11,31 @@ const LandingPage = ({navigation}) => {
       icon: 'info',
       title: 'Info',
       screen: 'About',
+      Icon: MaterialIcon,
     },
     {
       title: 'Learn',
       screen: 'Learn',
       icon: 'subscriptions',
+      Icon: MaterialIcon,
     },
     {
       title: 'Stats',
       screen: 'Stats',
       icon: 'analytics',
+      Icon: MaterialIcon,
     },
     {
       title: 'Wallet',
       screen: 'Wallet',
       icon: 'account-balance-wallet',
+      Icon: MaterialIcon,
+    },
+    {
+      title: 'My Stats',
+      screen: 'MyStats',
+      icon: 'analytics-sharp',
+      Icon: IonIcon,
     },
   ];
 
@@ -74,6 +85,7 @@ const LandingPage = ({navigation}) => {
       </Ripple>
       <FlatList
         style={{flex: 1, paddingTop: '3%'}}
+        contentContainerStyle={{paddingBottom: '5%'}}
         showsVerticalScrollIndicator={false}
         data={options}
         renderItem={({item}) => (
@@ -90,12 +102,12 @@ const LandingPage = ({navigation}) => {
               margin: '2%',
               borderRadius: 25,
               backgroundColor: '#F5F6FC',
-              paddingBottom: '13%',
             }}
             innerStyle={{
               padding: '10%',
+              marginBottom: '28.5%',
             }}>
-            <MaterialIcon
+            <item.Icon
               style={styles.icon}
               name={item.icon}
               size={39}
