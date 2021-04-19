@@ -1,3 +1,7 @@
+
+# Octopus
+DataUnion.app's mobile app to use the platform on mobile phones.
+
 ## Available Scripts
 ### `npm install` or `yarn`
 It will add all the required components for your project to run inside your node_modules.
@@ -15,3 +19,27 @@ The page will automatically reload if you make changes to the code.<br>
 You will see the build errors and lint warnings in the console.
 ## User Guide
 You can find detailed instructions on using React Native and many tips in [its documentation](https://reactnative.dev/docs/getting-started).
+
+# Commands to run the iOS version
+
+Requirements:
+
+pod --version => >= 1.10.1
+
+yarn -v => >= 1.22.4
+
+node -v => >= v14.0.0
+
+XCode + Simulator installed
+
+Then run in the root directory:
+```
+yarn
+
+yarn react-native link
+
+npx pod-install
+
+npx react-native run-ios
+```
+
