@@ -5,7 +5,7 @@ import {ScrollView, Text, View, StyleSheet} from 'react-native';
 const About = () => {
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.header}>Kictstart the new data economy</Text>
         <Text style={styles.text}>
           Data is the new oil in the 21st century and big cooperations have

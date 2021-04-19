@@ -13,8 +13,9 @@ import About from './screens/About';
 import Stats from './screens/Stats';
 import SwipeAI from './screens/SwipeAI';
 import Learn from './screens/Learn';
-import Ripple from './components/Ripple';
 import Wallet from './screens/Wallet';
+import MyStats from './screens/MyStats';
+import Ripple from './components/Ripple';
 import {theme} from './services/Common/theme';
 
 const Tab = createBottomTabNavigator();
@@ -207,6 +208,26 @@ const WalletStack = () => (
   </Stack.Navigator>
 );
 
+const MyStatsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="MyStats"
+      component={MyStats}
+      options={({navigation}) => {
+        return Header(
+          {
+            showTitle: false,
+            showAppIcon: true,
+            isTransparent: true,
+            showRightButton: true,
+          },
+          navigation,
+        );
+      }}
+    />
+  </Stack.Navigator>
+);
+
 const BottomTabs = () => (
   <Tab.Navigator
     tabBarOptions={{
@@ -277,6 +298,15 @@ const BottomTabs = () => (
         unmountOnBlur: true,
         // eslint-disable-next-line react/display-name
         tabBarButton: props => <TabComponent label="Wallet" {...props} />,
+      }}
+    />
+    <Tab.Screen
+      name="MyStats"
+      component={MyStatsStack}
+      options={{
+        unmountOnBlur: true,
+        // eslint-disable-next-line react/display-name
+        tabBarButton: props => <TabComponent label="MyStats" {...props} />,
       }}
     />
   </Tab.Navigator>
