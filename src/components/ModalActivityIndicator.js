@@ -1,5 +1,6 @@
-import {ActivityIndicator, Image, Modal, View} from 'react-native';
 import React from 'react';
+import {ActivityIndicator, Image, Modal, View, Text} from 'react-native';
+import {theme} from '../services/Common/theme';
 
 const ModalActivityIndicator = props => {
   const {modalVisible} = props || {};
@@ -18,24 +19,28 @@ const ModalActivityIndicator = props => {
             justifyContent: 'center',
           }}>
           <Image
-            source={require('../assets/icon.png')}
+            resizeMode="stretch"
             style={{
-              width: 120,
-              height: 120,
+              width: 100,
+              height: 60,
             }}
+            source={require('../assets/icon.png')}
           />
           <ActivityIndicator
             size={20}
-            color="#3c1081"
+            color={theme.COLORS.WHITE}
             style={{
-              left: 0,
+              left: '12%',
               right: 0,
-              top: '52.5%',
+              top: '46.5%',
               position: 'absolute',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           />
+          <Text style={{color: theme.COLORS.WHITE, marginTop: 10}}>
+            Please Wait...
+          </Text>
         </View>
       </View>
     </Modal>
