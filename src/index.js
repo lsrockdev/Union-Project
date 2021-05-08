@@ -14,6 +14,9 @@ import Stats from './screens/Stats';
 import SwipeAI from './screens/SwipeAI';
 import Learn from './screens/Learn';
 import Wallet from './screens/Wallet';
+//import Wallets from './screens/Wallets';
+//import MyWallet from '../wallet/App';
+import walletEntry from '../walletEntry'
 import MyStats from './screens/MyStats';
 import Ripple from './components/Ripple';
 import {theme} from './services/Common/theme';
@@ -192,7 +195,7 @@ const WalletStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="Wallet"
-      component={Wallet}
+      component={walletEntry}
       options={({navigation}) => {
         return Header(
           {
