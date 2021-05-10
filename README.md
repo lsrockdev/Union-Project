@@ -20,7 +20,7 @@ You will see the build errors and lint warnings in the console.
 ## User Guide
 You can find detailed instructions on using React Native and many tips in [its documentation](https://reactnative.dev/docs/getting-started).
 
-# Commands to run the iOS version
+# Commands to run the iOS version on Mac
 
 Requirements:
 
@@ -44,7 +44,7 @@ npx react-native run-ios
 ```
 
 
-# Commands to run the iOS version
+# Commands to run the Android version on Windows
 ```
 yarn install --check-files
 react-native run-android
