@@ -44,7 +44,7 @@ npx react-native run-ios
 ```
 
 
-# Commands to run the iOS version
+# Commands to run the Android Version on Windows
 ```
 yarn install --check-files
 react-native run-android
