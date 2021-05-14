@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {theme} from '../services/Common/theme';
 import {LineChart} from 'react-native-chart-kit';
 import {
@@ -10,7 +10,63 @@ import {
   Dimensions,
 } from 'react-native';
 
+import {actions} from '../services/State/Reducer';
+import {useStateValue} from '../services/State/State';
+import {
+  getUserStats
+} from '../services/API/APIManager';
+
 const MyStats = () => {
+  useEffect(() => {
+    fetchOverall();
+  }, []);
+
+  const [annotations, setAnnotations] = useState(0);
+  const [uploads, setUploads] = useState(0);
+  const [verifications, setVerifications] = useState(0);
+  const [, dispatch] = useStateValue();
+  const fetchOverall = async () => {
+    try {
+      dispatch({
+        type: actions.SET_OVERALL
+      });
+      const start = '01-01-2018';
+      const end = new Date().toISOString().replace(/T.*/, '').split('-').reverse().join('-');
+      const response = await getUserStats(start, end);
+      if (response && response.result) {
+        let sum_anno = 0;
+        sum_anno += response.result.tag_annotations.reduce((total, item) => total + Number(item.value), 0);
+        sum_anno += response.result.text_annotations.reduce((total, item) => total + Number(item.value), 0);
+        let sum_upload = 0;
+        sum_upload += response.result.uploads.reduce((total, item) => total + Number(item.value), 0);
+        let sum_verification = 0;
+        sum_verification += response.result.verifications.reduce((total, item) => total + Number(item.value), 0);
+        setAnnotations(sum_anno);
+        setUploads(sum_upload);
+        setVerifications(sum_verification);
+      }
+    } catch (error) {
+      dispatch({
+        type: actions.SET_ALERT_SETTINGS,
+        alertSettings: {
+          show: true,
+          type: 'error',
+          title: 'Error Occured',
+          message:
+            'This Operation Could Not Be Completed. Please Try Again Later.',
+          showConfirmButton: true,
+          confirmText: 'Ok',
+        },
+      });
+    } finally {
+      dispatch({
+        type: actions.SET_OVERALL,
+        start_date: '01-01-2018',
+        end_date: new Date().toISOString().replace(/T.*/, '').split('-').reverse().join('-')
+      });
+    }
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -23,7 +79,7 @@ const MyStats = () => {
                 style={{height: 20, width: 30}}
               />
               <Text style={styles.itemTitle}>Uploads</Text>
-              <Text style={styles.itemValue}>135672</Text>
+              <Text style={styles.itemValue}>{uploads}</Text>
             </View>
             <View style={styles.boxMini}>
               <Text style={styles.miniBoxValue}>2.7772782</Text>
@@ -38,7 +94,7 @@ const MyStats = () => {
                 style={{height: 20, width: 30}}
               />
               <Text style={styles.itemTitle}>Annotations</Text>
-              <Text style={styles.itemValue}>62882</Text>
+              <Text style={styles.itemValue}>{annotations}</Text>
             </View>
             <View style={styles.boxMini}>
               <Text style={styles.miniBoxValue}>2.7772782</Text>
@@ -53,7 +109,7 @@ const MyStats = () => {
                 style={{height: 20, width: 30}}
               />
               <Text style={styles.itemTitle}>Verifications</Text>
-              <Text style={styles.itemValue}>982672</Text>
+              <Text style={styles.itemValue}>{verifications}</Text>
             </View>
             <View style={styles.boxMini}>
               <Text style={styles.miniBoxValue}>0.00082</Text>

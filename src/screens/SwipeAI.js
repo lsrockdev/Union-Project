@@ -225,7 +225,7 @@ const SwipeAI = () => {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ripple
+        {/* <Ripple
           outerStyle={{
             borderWidth: 4,
             borderRadius: 25,
@@ -236,7 +236,7 @@ const SwipeAI = () => {
           innerStyle={{padding: 7}}
           onPress={() => {}}>
           <MaterialCommunityIcon name="reload" size={20} color="#dccd96" />
-        </Ripple>
+        </Ripple> */}
         <Ripple
           outerStyle={{
             borderWidth: 6,
