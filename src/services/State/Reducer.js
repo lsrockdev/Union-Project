@@ -2,6 +2,7 @@ export const actions = {
   SET_USER: 'SET_USER',
   SET_ALERT_SETTINGS: 'SET_ALERT_SETTINGS',
   SET_PROGRESS_SETTINGS: 'SET_PROGRESS_SETTINGS',
+  SET_OVERALL: 'SET_OVERALL',
   SET_SHOW_VIDEOCALL_MODAL: 'SET_SHOW_VIDEOCALL_MODAL',
   SET_APPOINTMENT_BOOKED: 'SET_APPOINTMENT_BOOKED',
   SET_NEW_MESSAGE: 'SET_NEW_MESSAGE',
@@ -18,6 +19,12 @@ export const reducer = (state, action) => {
       return {
         ...state,
         progressSettings: {show: action.show, promise: null},
+      };
+    }
+    case actions.SET_OVERALL: {
+      return {
+        ...state,
+        overall: {promise: null},
       };
     }
     case actions.SET_ALERT_SETTINGS:
