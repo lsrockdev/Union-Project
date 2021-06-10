@@ -21,9 +21,18 @@ const MyStats = () => {
     fetchOverall();
   }, []);
 
+  const Coff_Uploads = 20 / 1000000;
+  const Coff_Annotations = 20 / 1000000; //Stats 5) formula still in work
+  const Coff_Verifications = 20 / 2000000;
+
   const [annotations, setAnnotations] = useState(0);
   const [uploads, setUploads] = useState(0);
   const [verifications, setVerifications] = useState(0);
+  const [uploadsQuicrra, setUploadsQuicrra] = useState(0);
+  const [annotationsQuicrra, setAnnotationsQuicrra] = useState(0);
+  const [verificationsQuicrra, setVerificationsQuicrra] = useState(0);
+  const [cumuQuicrra, setCumuQuicrra] = useState(0);
+
   const [, dispatch] = useStateValue();
   const fetchOverall = async () => {
     try {
@@ -44,6 +53,15 @@ const MyStats = () => {
         setAnnotations(sum_anno);
         setUploads(sum_upload);
         setVerifications(sum_verification);
+
+        let upload_rra = sum_upload * Coff_Uploads;
+        let anno_rra = sum_anno * Coff_Annotations;
+        let veri_rra = sum_verification * Coff_Verifications;
+
+        setUploadsQuicrra(Number(upload_rra.toFixed(8)));
+        setAnnotationsQuicrra(Number(anno_rra.toFixed(8)));
+        setVerificationsQuicrra(Number(veri_rra.toFixed(8)));
+        setCumuQuicrra(Number((upload_rra + anno_rra + veri_rra).toFixed(8)));
       }
     } catch (error) {
       dispatch({
@@ -82,7 +100,7 @@ const MyStats = () => {
               <Text style={styles.itemValue}>{uploads}</Text>
             </View>
             <View style={styles.boxMini}>
-              <Text style={styles.miniBoxValue}>2.7772782</Text>
+              <Text style={styles.miniBoxValue}>uploadsQuicrra</Text>
               <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
             </View>
           </View>
@@ -97,7 +115,7 @@ const MyStats = () => {
               <Text style={styles.itemValue}>{annotations}</Text>
             </View>
             <View style={styles.boxMini}>
-              <Text style={styles.miniBoxValue}>2.7772782</Text>
+              <Text style={styles.miniBoxValue}>annotationsQuicrra</Text>
               <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
             </View>
           </View>
@@ -112,13 +130,13 @@ const MyStats = () => {
               <Text style={styles.itemValue}>{verifications}</Text>
             </View>
             <View style={styles.boxMini}>
-              <Text style={styles.miniBoxValue}>0.00082</Text>
+              <Text style={styles.miniBoxValue}>verificationsQuicrra</Text>
               <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
             </View>
           </View>
         </View>
         <View style={styles.fullWidthBox}>
-          <Text style={styles.fullWidthBoxValue}>2.7772782</Text>
+          <Text style={styles.fullWidthBoxValue}>cumuQuicrra</Text>
           <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
         </View>
         <View style={styles.bottomContainer}>

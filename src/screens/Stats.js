@@ -21,10 +21,61 @@ const Stats = () => {
     fetchOverall();
   }, []);
 
+  const Coff_Uploads = 20 / 1000000;
+  const Coff_Annotations = 20 / 1000000; //Stats 5) formula still in work
+  const Coff_Verifications = 20 / 2000000;
+
   const [annotations, setAnnotations] = useState(0);
   const [uploads, setUploads] = useState(0);
   const [verifications, setVerifications] = useState(0);
+
+  const [uploadsQuicrra, setUploadsQuicrra] = useState(0);
+  const [annotationsQuicrra, setAnnotationsQuicrra] = useState(0);
+  const [verificationsQuicrra, setVerificationsQuicrra] = useState(0);
+  const [cumuQuicrra, setCumuQuicrra] = useState(0);
+
+  const [uploadsDataset, setUploadsDataset] = useState(0);
+  const [annoDataset, setAnnoDataset] = useState(0);
+  const [veriDataset, setVeriDataset] = useState(0);
+
+  const [chartDataX, setChartDataX] = useState([]); //datetime
+  const [chartDataY, setChartDataY] = useState([]); //datavalue
+
   const [, dispatch] = useStateValue();
+
+  let arr_uploads = [];
+  let arr_annotations = [];
+  let arr_verifications = [];
+
+
+  const updateChart = (chartType)=>{
+    chartDataX.empty();
+    chartDataY.empty();
+    console.log(JSON.stringify(chartDataX));
+    console.log(JSON.stringify(chartDataY));
+
+    if (chartType == 'uploads') {
+      arr_uploads.map(({date, value})=>{
+        chartDataX.push(date);
+        chartDataY.push(value);
+      });
+    } else if (chartType == "annotations") {
+      arr_annotations.map(({date, value})=>{
+        chartDataX.push(date);
+        chartDataY.push(value);
+      });
+    } else if (chartType == "verifications") {
+      arr_verifications.map(({date, value})=>{
+        chartDataX.push(date);
+        chartDataY.push(value);
+      });
+    }
+
+    setChartDataX(chartDataX);
+    setChartDataY(chartDataY);
+  };
+
+
   const fetchOverall = async () => {
     try {
       dispatch({
@@ -35,15 +86,58 @@ const Stats = () => {
       const response = await getOverall(start, end);
       if (response && response.result) {
         let sum_anno = 0;
+
+        console.log(JSON.stringify(response));
+
         sum_anno += response.result.tag_annotations.reduce((total, item) => total + Number(item.value), 0);
         sum_anno += response.result.text_annotations.reduce((total, item) => total + Number(item.value), 0);
         let sum_upload = 0;
         sum_upload += response.result.uploads.reduce((total, item) => total + Number(item.value), 0);
         let sum_verification = 0;
         sum_verification += response.result.verifications.reduce((total, item) => total + Number(item.value), 0);
+
+        response.result.uploads.map(({date, value})=>{
+          arr_uploads.push({date:(date.split("-")[2] || ""), value:value});
+        });
+
+
+        response.result.verifications.map(({date, value})=>{
+          arr_annotations.push({date:(date.split("-")[2] || ""), value:value});
+        });
+
+        response.result.text_annotations
+        .map(({date, value})=>{
+          arr_verifications.push({date:(date.split("-")[2] || ""), value:value});
+        });
+        response.result.tag_annotations
+        .map(({date, value})=>{
+          arr_verifications.push({date:(date.split("-")[2] || ""), value:value});
+        });
+
+        arr_verifications.sort((a, b) =>{
+          return Number(a.date) < Number(b.date) 
+        });
+
+
+
         setAnnotations(sum_anno);
         setUploads(sum_upload);
         setVerifications(sum_verification);
+
+        let upload_rra = sum_upload * Coff_Uploads;
+        let anno_rra = sum_anno * Coff_Annotations;
+        let veri_rra = sum_verification * Coff_Verifications;
+
+        setUploadsQuicrra(Number(upload_rra.toFixed(8)));
+        setAnnotationsQuicrra(Number(anno_rra.toFixed(8)));
+        setVerificationsQuicrra(Number(veri_rra.toFixed(8)));
+        setCumuQuicrra(Number((upload_rra + anno_rra + veri_rra).toFixed(8)));
+
+        console.log("");
+
+        updateChart('uploads');
+
+
       }
     } catch (error) {
       dispatch({
@@ -82,7 +176,7 @@ const Stats = () => {
               <Text style={styles.itemValue}>{uploads}</Text>
             </View>
             <View style={styles.boxMini}>
-              <Text style={styles.miniBoxValue}>2.7772782</Text>
+              <Text style={styles.miniBoxValue}>{uploadsQuicrra}</Text>
               <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
             </View>
           </View>
@@ -97,7 +191,7 @@ const Stats = () => {
               <Text style={styles.itemValue}>{annotations}</Text>
             </View>
             <View style={styles.boxMini}>
-              <Text style={styles.miniBoxValue}>2.7772782</Text>
+              <Text style={styles.miniBoxValue}>{annotationsQuicrra}</Text>
               <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
             </View>
           </View>
@@ -112,13 +206,13 @@ const Stats = () => {
               <Text style={styles.itemValue}>{verifications}</Text>
             </View>
             <View style={styles.boxMini}>
-              <Text style={styles.miniBoxValue}>0.00082</Text>
+              <Text style={styles.miniBoxValue}>{verificationsQuicrra}</Text>
               <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
             </View>
           </View>
         </View>
         <View style={styles.fullWidthBox}>
-          <Text style={styles.fullWidthBoxValue}>2.7772782</Text>
+          <Text style={styles.fullWidthBoxValue}>{cumuQuicrra}</Text>
           <Text style={styles.miniBoxFooter}>QUICRRA-0</Text>
         </View>
         <View style={styles.bottomContainer}>
@@ -133,19 +227,12 @@ const Stats = () => {
               withVerticalLines={false}
               width={Dimensions.get('window').width}
               data={{
-                labels: [2020, 2021],
+                labels: chartDataX,
                 datasets: [
                   {
                     strokeWidth: 1,
                     withDots: false,
-                    data: [
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                    ],
+                    data: chartDataY,
                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // optional
                   },
                 ],
