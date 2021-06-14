@@ -50,45 +50,48 @@ class WalletSettings extends Component {
   }
 
   handleNewAccount = () => {
-    (Utils.createAccFunc(this.web3, this.props.STPupdateAccounts)).then(res => {
-      this.wallet = res
+    Utils.createAccFunc(this.web3, this.props.STPupdateAccounts).then((res) => {
+      this.wallet = res;
     });
-    let salt = "salt"
-    let seedPhrase = ""
-    let ks = {}
+    let salt = 'salt';
+    let seedPhrase = '';
+    let ks = {};
 
     const saveWallet = async (walletdump) => {
-      console.log('saving Wallet...')
+      console.log('saving Wallet...');
       await AsyncStorage.setItem(localStorageKey, JSON.stringify(walletdump));
     };
-    
+
     try {
       bip39.generateMnemonic(128).then((mnemonic) => {
-        seedPhrase = mnemonic
-        Utils.updateSeedPhrase(seedPhrase, this.props.STPupdateSeedPhrase)
-      })  
+        seedPhrase = mnemonic;
+        Utils.updateSeedPhrase(seedPhrase, this.props.STPupdateSeedPhrase);
+      });
 
       let arr = new Uint8Array(20);
       crypto.getRandomValues(arr);
-      let password = btoa(String.fromCharCode(...arr)).split('').filter(value => {
-          return !['+', '/' ,'='].includes(value);
-        }).slice(0,10).join('');
+      let password = btoa(String.fromCharCode(...arr))
+        .split('')
+        .filter((value) => {
+          return !['+', '/', '='].includes(value);
+        })
+        .slice(0, 10)
+        .join('');
 
       this.password = password;
-      const opt = { password, seedPhrase, hdPathString, salt
-    };
+      const opt = {password, seedPhrase, hdPathString, salt};
 
     lightwallet.keystore.createVault(opt, (err, data) => {
       if (err)
-        console.warn(err)
-      ks = data
-      const walletdump = { ver: '1', ks: ks.serialize(), }
-      saveWallet(walletdump)
+        {console.warn(err)}
+      ks = data;
+        const walletdump = {ver: '1', ks: ks.serialize()};
+        saveWallet(walletdump);
     })
     }
     catch(err){console.log(err)}
     console.log({seedphrase: seedPhrase ,ksvault: ks, cryptopass: this.password,  })
-   return this.wallet
+   return this.wallet;
   }
 
   render() {
@@ -162,7 +165,9 @@ class WalletSettings extends Component {
             width: '70%',
             alignSelf: 'center',
           }}
-          onPress={this.handleNewAccount}
+          onPress={() => {
+            this.handleNewAccount();
+          }}
           textStyle={{
             fontSize: 19,
             fontWeight: '600',
