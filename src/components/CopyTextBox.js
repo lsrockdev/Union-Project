@@ -5,9 +5,10 @@ import Clipboard from '@react-native-community/clipboard';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 const CopyTextBox = ({item}) => {
-  const {label = '', value = '', oneLine = false} = item || {};
+  const {address = '', value = '', oneLine = false} = item || {};
+  
   const onCopy = () => {
-    Clipboard.setString(value);
+    Clipboard.setString(item);
     ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
   };
 
@@ -25,7 +26,7 @@ const CopyTextBox = ({item}) => {
           fontWeight: '600',
           color: '#6c6c6c',
         }}>
-        {label}
+        {address}
       </Text>
       <View
         style={{

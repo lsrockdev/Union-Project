@@ -28,12 +28,15 @@ import WalletActions from './src/screens/WalletActions'
 import { store } from './src/store/store.js'
 import { getWeb3_} from './src/web3/getWeb3'
 
+
 const Stack = createStackNavigator()
 const persistor = persistStore(store);
 
 getWeb3_.catch(
   err => console.warn('Error in web3 initialization.', err)
 )
+
+
 
 export default class App extends Component {
   constructor(props) {
@@ -43,7 +46,8 @@ export default class App extends Component {
   }
 
   render() {
-    return (
+
+        return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Stack.Navigator>

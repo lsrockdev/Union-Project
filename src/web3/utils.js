@@ -1,6 +1,10 @@
 import { randomBytes } from 'react-native-randombytes';
+import {rinkebyConnect} from '../web3/getWeb3'
+import {ropstenConnect} from '../web3/getWeb3'
+import {kovanConnect} from '../web3/getWeb3'
+import {mainConnect} from '../web3/getWeb3'
 
-const getRandom = (count) => new Promise((resolve, reject) => {
+export const getRandom = (count) => new Promise((resolve, reject) => {
   return randomBytes(count, (err, bytes) => {
     if (err) reject(err)
     else resolve(bytes)
@@ -92,10 +96,10 @@ export async function checkNetwork(web3) {
     return web3.eth
       .getBlock(0)
       .then(block => {
-        console.log(block.hash)
+        console.log("web3 block:", block)
         switch (block.hash) {
           case '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3':
-            return 'main';
+            return 'mainnet';
           case '0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177':
             return 'rinkeby';
           case '0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d':
