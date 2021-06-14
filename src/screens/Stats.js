@@ -15,6 +15,14 @@ import {useStateValue} from '../services/State/State';
 import {
   getOverall
 } from '../services/API/APIManager';
+
+import {
+  calcUploadsCumu,
+  calcAnnoDescCumu,
+  calcAnnoTagCumu,
+  calcVeriCumu
+} from '../services/Common/CommonFunctions';
+
 var _arr_uploads = [];
 var _arr_annotations = [];
 var _arr_verifications = [];
@@ -24,10 +32,6 @@ const Stats = () => {
     fetchOverall();
   }, []);
 
-  const Coff_Uploads = 20 / 1000000;
-  const Coff_Annotations = 20 / 1000000; //Stats 5) formula still in work
-  const Coff_Verifications = 20 / 2000000;
-
   const [annotations, setAnnotations] = useState(0);
   const [uploads, setUploads] = useState(0);
   const [verifications, setVerifications] = useState(0);
@@ -36,12 +40,16 @@ const Stats = () => {
   const [annotationsQuicrra, setAnnotationsQuicrra] = useState(0);
   const [verificationsQuicrra, setVerificationsQuicrra] = useState(0);
   const [cumuQuicrra, setCumuQuicrra] = useState(0);
+
   const [graphTitle, setGraphTitle] = useState("UPLOAD");
   
   const [curChartState, setCurChartState] = useState('uploads');
 
+  const curYear = Number(new Date().toISOString().replace(/T.*/, '').split('-')[0]);
+
+
   const [curChartdata, setCurChartdata] = useState({
-    labels: ["2020", "2021"],
+    labels: [(curYear-1).toString(), curYear.toString()],
     datasets: [
       {
         strokeWidth: 1,
@@ -51,39 +59,25 @@ const Stats = () => {
     ],
   });
 
-  const [curCumuChartdata, setCurCumuChartdata] = useState(
-    {
-      labels: ["2020", "2021"],
-      datasets: [
-        {
-          strokeWidth: 1,
-          withDots: false,
-          data: [0]
-        },
-      ],
-    });
+  const [curCumuChartdata, setCurCumuChartdata] = useState({
+    labels: [(curYear-1).toString(), curYear.toString()],
+    datasets: [
+      {
+        strokeWidth: 1,
+        withDots: false,
+        data: [0]
+      },
+    ],
+  });
 
+  //authToken
   const [, dispatch] = useStateValue();
 
-  const calcUploadsCumu = (value)=> {
-    return value * (20 / 1000000);
-  }
-
-  const calcAnnoDescCumu = (value)=> {
-    return value * 2 * 20 / (2 * 3000000 + 7000000);
-  }
-
-  const calcAnnoTagCumu = (value)=> {
-    return value * 20 / (2 * 3000000 + 7000000);
-  }
-
-  const calcVeriCumu = (value)=> {
-    return value * 20 / (20 * (3000000 + 7000000));
-  }
-
+  
+  //Get uploads/annotations/verification cumulative points per date
   const sumCumuData = (response)=> {
     let cumuData = [];
-
+    //calc uploads per day cumu
     response.result.uploads.map(({date, value})=>{
       let index = cumuData.findIndex(i=>i.date === date);
       if (index == -1){
@@ -93,6 +87,7 @@ const Stats = () => {
       } 
     });
 
+    //calc verifications per day cumu
     response.result.verifications.map(({date, value})=>{
       let index = cumuData.findIndex(i=>i.date === date);
       if (index == -1){
@@ -102,6 +97,7 @@ const Stats = () => {
       } 
     });
 
+    //calc text annotations per day cumu
     response.result.text_annotations.map(({date, value})=>{
       let index = cumuData.findIndex(i=>i.date === date);
       if (index == -1){
@@ -111,6 +107,7 @@ const Stats = () => {
       } 
     });
 
+    //calc tag annotations per day cumu
     response.result.tag_annotations.map(({date, value})=>{
       let index = cumuData.findIndex(i=>i.date === date);
       if (index == -1){
@@ -120,9 +117,7 @@ const Stats = () => {
       } 
     });
 
-    console.log(JSON.stringify(cumuData));
-    
-    //
+    //split xData, yData for chart
     let _chartDataX = [];
     let _chartDataY = [];
     cumuData.map(({date, value})=>{
@@ -130,6 +125,7 @@ const Stats = () => {
       _chartDataY.push(value);
     });
 
+    //remove duplicate date
     _chartDataX.push((Number(_chartDataX[_chartDataX.length - 1]) + 1).toString());
     let xData = [];
     _chartDataX.map((value, index)=>{
@@ -145,13 +141,15 @@ const Stats = () => {
         }
       }
     });
+    
+    //chart dataset
     const chartDataClone = {...curCumuChartdata};
     chartDataClone.datasets[0].data = _chartDataY;
     chartDataClone.labels = xData;
     setCurCumuChartdata(chartDataClone);
   }
 
-
+  // uploads | annotation | verifcation chart
   const updateChart = (chartType)=>{
 
     let _chartDataX = [];
@@ -176,6 +174,10 @@ const Stats = () => {
       });
       setGraphTitle("VERIFICATION");
     }
+    if(_chartDataX.length == 0) {
+      _chartDataX.push(new Date().toISOString().replace(/T.*/, '').split('-')[0]);
+    } 
+
     _chartDataX.push((Number(_chartDataX[_chartDataX.length - 1]) + 1).toString());
     let xData = [];
     _chartDataX.map((value, index)=>{
@@ -192,8 +194,9 @@ const Stats = () => {
       }
     });
 
+    //chart dataset
     const chartDataClone = {...curChartdata};
-    chartDataClone.datasets[0].data = _chartDataY;
+    chartDataClone.datasets[0].data = _chartDataY.length == 0 ? [0]: _chartDataY;
     chartDataClone.labels = xData;
     setCurChartdata(chartDataClone);
     setCurChartState(chartType);
@@ -206,9 +209,11 @@ const Stats = () => {
       dispatch({
         type: actions.SET_OVERALL
       });
+
       const start = '01-01-2018';
       const end = new Date().toISOString().replace(/T.*/, '').split('-').reverse().join('-');
       const response = await getOverall(start, end);
+
       if (response && response.result) {
         let sum_anno_description = 0;
         let sum_anno_tags = 0;
@@ -218,6 +223,7 @@ const Stats = () => {
         _arr_annotations = [];
         _arr_verifications = [];
 
+        //retrieve total sumup
         sum_anno_tags += response.result.tag_annotations.reduce((total, item) => total + Number(item.value), 0);
         sum_anno_description += response.result.text_annotations.reduce((total, item) => total + Number(item.value), 0);
         sum_anno = sum_anno_tags + sum_anno_description;
@@ -227,7 +233,7 @@ const Stats = () => {
         sum_verification += response.result.verifications.reduce((total, item) => total + Number(item.value), 0);
 
 
-
+        //collect chart data
         response.result.uploads.map(({date, value})=>{
           _arr_uploads.push({date:(date.split("-")[2] || ""), value:value});
         });
@@ -236,11 +242,19 @@ const Stats = () => {
           _arr_verifications.push({date:(date.split("-")[2] || ""), value:value});
         });
 
-        response.result.text_annotations
-        .map(({date, value})=>{
-          _arr_annotations.push({date:(date.split("-")[2] || ""), value:value});
-        });
+        let _total_annotations = [...response.result.text_annotations];
+
         response.result.tag_annotations
+        .map(({date, value})=>{
+          let index = _total_annotations.findIndex(i=>i.date === date);
+          if (index == -1){
+            _total_annotations.push({date:date, value:value});
+          } else {
+            _total_annotations[index].value += value;
+          } 
+        });
+
+        _total_annotations
         .map(({date, value})=>{
           _arr_annotations.push({date:(date.split("-")[2] || ""), value:value});
         });
@@ -266,7 +280,7 @@ const Stats = () => {
         sumCumuData(response);
       }
     } catch (error) {
-      console.log(error);
+
       dispatch({
         type: actions.SET_ALERT_SETTINGS,
         alertSettings: {
@@ -349,7 +363,7 @@ const Stats = () => {
               fromZero
               transparent
               height={200}
-              yAxisSuffix="k"
+              yAxisSuffix=""
               style={styles.graph}
               withVerticalLines={false}
               width={Dimensions.get('window').width}
@@ -367,7 +381,7 @@ const Stats = () => {
               <View style={styles.buttonInnerContainer}>
                 <Button
                   color="#F5F6FC"
-                  title="ANNOTATIONS"
+                  title="UPLOADS"
                   buttonStyle={{
                     borderRadius: 25,
                     width: '70%',
@@ -431,7 +445,7 @@ const Stats = () => {
               fromZero
               transparent
               height={200}
-              yAxisSuffix="k"
+              yAxisSuffix=""
               style={styles.graph}
               withVerticalLines={false}
               width={Dimensions.get('window').width}

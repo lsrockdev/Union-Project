@@ -21,6 +21,7 @@ export const getWeb3_ = new Promise((resolve, reject) => {
  // mnemonic = "pride auto solar tomorrow trim dismiss myth alert scrap gap clean rotate"
 
   // Wait for loading completion to avoid race conditions with web3 injection timing.
+  
  web3 = new Web3(new Web3.providers.HttpProvider(rinkeby))
   results = {
     web3Instance: web3,
@@ -30,6 +31,5 @@ export const getWeb3_ = new Promise((resolve, reject) => {
 
 export const getWeb3 = () => {
   const res = createAlchemyWeb3("https://eth-rinkeby.alchemyapi.io/v2/J1LeelYCWPBCv5auJWmbH4gNTWuYP1OI");
-  //console.log({Web3res: res})
   return res
 }

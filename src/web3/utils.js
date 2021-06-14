@@ -112,3 +112,13 @@ export async function checkNetwork(web3) {
     return "none";
   }
 }
+
+export function signMessage(web3, msg, pkey) {
+  try {
+    return web3.eth.accounts.sign(msg, pkey).then(res => {
+      return res;
+    });
+  } catch (err) {
+    return "";
+  }
+}

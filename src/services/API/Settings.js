@@ -6,6 +6,13 @@ export const settings = {
     getImage: '/api/v1/taxonomy/image?image_id=$[image_id]',
     overall: '/api/v1/stats/overall?start_date=$[start_date]&end_date=$[end_date]',
     userStats: '/api/v1/stats/user?start_date=$[start_date]&end_date=$[end_date]',
-    refreshToken: '/refresh'
   },
+  //Authentification
+  auth: {
+    refreshToken: '/refresh',
+    login: '/login',
+    logout: '/logout',
+    get_nounce: '/get-nonce?public_address=$[public_address]',
+    register: '/register'
+  }
 };

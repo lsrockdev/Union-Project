@@ -29,9 +29,7 @@ class WalletSettings extends Component {
       if (this.props.web3 != null) {
         clearInterval(web3Returned);
         this.web3 = this.props.web3.web3Instance
-        //console.log(this.web3)
         Utils.checkNetwork(this.web3).then((res) => {
-          console.log(res)
           if (res == 'local' || res == 'rinkeby') {
             this.setState({
               isConnected: true,
@@ -41,7 +39,6 @@ class WalletSettings extends Component {
         try {
           console.log('check account')
           Utils.checkAccount(this.web3, this.props.STPupdateAccounts);
-          //console.log(this.props.account)
         } catch (err) {
           console.error('error', err);
         }
