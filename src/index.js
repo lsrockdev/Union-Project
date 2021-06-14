@@ -16,6 +16,7 @@ import Learn from './screens/Learn';
 import Wallet from './screens/Wallet';
 //import Wallets from './screens/Wallets';
 //import MyWallet from '../wallet/App';
+//import myApp from '../myApp'
 import walletEntry from '../walletEntry'
 import MyStats from './screens/MyStats';
 import Ripple from './components/Ripple';
