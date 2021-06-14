@@ -146,33 +146,6 @@ class WalletSettings extends Component {
   STORAGE_KEY = '@save_Keys'
   STORAGE_KEY2 = '@save_Pwd'
   STORAGE_KEY3 = '@save_Phrase'
-  
-
-
-
-
-  HandleEthBal = async() => {
-       let allEthBal
-       const address = await this.createNewAccts[0].address;
-       console.log("address:", address)
-       try {
-         allEthBal = await (web3(this.state.networktype)).eth.getBalance(address).then(bal => (web3(this.state.networktype)).utils.fromWei(bal, 'ether'))
-         this.setState({ ethTokenBal: allEthBal })
-         //console.log("AllEthBal:", this.state.ethTokenBal)
-       }
-       catch (err) { console.log(err) }
-
-       return allEthBal
-    };
-
-  credentials = [
-      {
-       // oneLines: false,
-        label: 'Memoric Phrase',
-        value:
-          'following guitar strings colors rainbow cranial nerves planets hello twitter follow kiss',
-      },
-    ]
 
   createNewAccts = async() => {
       let allWallets = []
@@ -189,19 +162,6 @@ class WalletSettings extends Component {
              :""
     }
 
-  handleWalletRecovery = async() => {
-   
-   //account: 0xd857369B301F712b8961bb3a5b419A7E89A7c0B4
-   try{
-    const web3_ = new Web3(Web3.givenProvider || "https://rinkeby.infura.io/v3/48f3dfa7944f442980a90c625e2f2921");
-    const recovered =  await (web3(this.state.networktype)).eth.accounts.privateKeyToAccount('0x1fb27a26465dec9d2de60a9a0770ece987f644c0d0b1dd20835651fe9539d2ff');
-    //const encrypted = await (web3(this.state.networktype)).eth.accounts.encrypt('0x1fb27a26465dec9d2de60a9a0770ece987f644c0d0b1dd20835651fe9539d2ff', 'test!')
-    console.log('recovered:', recovered)
-    //console.log('encrypted:', encrypted)
-   }
-   catch(error){console.log(error)}
-
-  }
 
   handleNewWallet = async() => {
       let allWallets = []
@@ -399,37 +359,40 @@ class WalletSettings extends Component {
     let ks = {}
 
     const saveWallet = async (walletdump) => {
-      console.log('saving Wallet...')
+      console.log('saving Wallet...');
       await AsyncStorage.setItem(localStorageKey, JSON.stringify(walletdump));
     };
-    
+
     try {
       bip39.generateMnemonic(128).then((mnemonic) => {
-        seedPhrase = mnemonic
-        Utils.updateSeedPhrase(seedPhrase, this.props.STPupdateSeedPhrase)
-      })  
+        seedPhrase = mnemonic;
+        Utils.updateSeedPhrase(seedPhrase, this.props.STPupdateSeedPhrase);
+      });
 
       let arr = new Uint8Array(20);
       crypto.getRandomValues(arr);
-      let password = btoa(String.fromCharCode(...arr)).split('').filter(value => {
-          return !['+', '/' ,'='].includes(value);
-        }).slice(0,10).join('');
+      let password = btoa(String.fromCharCode(...arr))
+        .split('')
+        .filter((value) => {
+          return !['+', '/', '='].includes(value);
+        })
+        .slice(0, 10)
+        .join('');
 
       this.password = password;
-      const opt = { password, seedPhrase, hdPathString, salt
-    };
+      const opt = {password, seedPhrase, hdPathString, salt};
 
     lightwallet.keystore.createVault(opt, (err, data) => {
       if (err)
-        console.warn(err)
-      ks = data
-      const walletdump = { ver: '1', ks: ks.serialize(), }
-      saveWallet(walletdump)
+        {console.warn(err)}
+      ks = data;
+        const walletdump = {ver: '1', ks: ks.serialize()};
+        saveWallet(walletdump);
     })
     }
     catch(err){console.log(err)}
     console.log({seedphrase: seedPhrase ,ksvault: ks, cryptopass: this.password,  })
-   return this.wallet
+   return this.wallet;
   }
 
   checkERC20Bal = async() => {
@@ -597,15 +560,9 @@ class WalletSettings extends Component {
             width: '70%',
             alignSelf: 'center',
           }}
-          onPress={() => this.props.navigation.navigate('My Wallet',
-          { password: this.state.pword,
-            address: this.state.publicKey,
-            seedPhrase: this.state.mnemonics,
-            privateKey: this.state.privateKey,
-            networktype: this.state.networktype,
-            oceanerc20Bal: this.state.oceanERC20TokenBal,
-            pheco0erc20balance: this.state.phec0ERC20TokenBal
-          })}
+          onPress={() => {
+            this.handleNewAccount();
+          }}
           textStyle={{
             fontSize: 19,
             fontWeight: '600',
