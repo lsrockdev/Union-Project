@@ -19,7 +19,6 @@ export const STPupdateAccounts = account0 => dispatch => {
 };
 
 export const STPupdateSeedPhrase = seedPhrase => dispatch => {
-  console.log(seedPhrase)
   dispatch({
     type: actionTypes.UPDATE_SEEDPHRASE,
     payload: seedPhrase,

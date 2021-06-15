@@ -1,5 +1,6 @@
 import {settings as s} from './Settings';
 import {setLastActivity} from '../DataManager';
+import { getAuthToken, setAuthToken } from '../DataManager';
 
 const getEndpointUrl = ep => `${s.baseUrl}${ep}`;
 
@@ -8,12 +9,8 @@ export const getData = async relativeUrl => {
     setLastActivity();
     const url = getEndpointUrl(relativeUrl);
     const config = {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTg5MDk0OTIsIm5iZiI6MTYxODkwOTQ5MiwianRpIjoiMzM2ZTk5YjAtM2ZkNC00NDQ4LTlhZDMtZTg1ZGRjYTI0ZWRkIiwiZXhwIjoxNjIxNTAxNDkyLCJpZGVudGl0eSI6IjB4ZTJDNjhDNThlQ2I0ODA3OGMzZjAzRmVjRUY1MTUzOGFBOGYxNDdBRSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.TUKOUTdJkGkr9TBYWBUKYgTSY1QPkyUFDRKRgiHtfeI',
-      },
+      method: 'get'
+      
     };
     const response = await fetch(url, config);
     const result = await response.json();
@@ -23,11 +20,17 @@ export const getData = async relativeUrl => {
   }
 };
 
-export const getUserData = async relativeUrl => {
+export const getUserData = async (relativeUrl) => {
   try {
-    setLastActivity();
-    const refreshToken = await postUserData(s.taxonomy.refreshToken, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjA2NTc3MzUsIm5iZiI6MTYyMDY1NzczNSwianRpIjoiNDFmOWExN2QtNGVhMS00ZDc1LWEwZWMtYTdiN2E3ODQ2NjRjIiwiZXhwIjoxNjIzMjQ5NzM1LCJpZGVudGl0eSI6IjB4ZjRGYjk2ODQ2NzY1NzMxZmI4MjY2RWI2MUY1QTczMzgwN2FBODhDMiIsInR5cGUiOiJyZWZyZXNoIn0.RAZDRvZKsMxZ-LajiCBXuR0ck6OIUM_t84mQR5Ps-QA');
+
+    await setLastActivity();
+    const authToken = await getAuthToken();
+    const refreshToken = await postUserData(s.auth.refreshToken, authToken.refresh_token);
     const url = getEndpointUrl(relativeUrl);
+    await setAuthToken({
+      refresh_token: authToken.refresh_token,
+      access_token: refreshToken.access_token
+    });
     const config = {
       method: 'get',
       headers: {
@@ -44,16 +47,17 @@ export const getUserData = async relativeUrl => {
   }
 }
 
-export const getFile = async relativeUrl => {
+export const getFile = async (relativeUrl) => {
   try {
     setLastActivity();
+    const authToken = await getAuthToken();
     const url = getEndpointUrl(relativeUrl);
     const config = {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
         Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTg5MDk0OTIsIm5iZiI6MTYxODkwOTQ5MiwianRpIjoiMzM2ZTk5YjAtM2ZkNC00NDQ4LTlhZDMtZTg1ZGRjYTI0ZWRkIiwiZXhwIjoxNjIxNTAxNDkyLCJpZGVudGl0eSI6IjB4ZTJDNjhDNThlQ2I0ODA3OGMzZjAzRmVjRUY1MTUzOGFBOGYxNDdBRSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.TUKOUTdJkGkr9TBYWBUKYgTSY1QPkyUFDRKRgiHtfeI',
+          `Bearer ${authToken.access_token}`,
       },
     };
     const response = await fetch(url, config);
@@ -70,13 +74,14 @@ export const postData = async (
   isFormData = false,
 ) => {
   setLastActivity();
+  //const authToken = await getAuthToken();
   const url = getEndpointUrl(relativeUrl);
   const config = {
     method: 'post',
     headers: {
       'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
-      Authorization:
-        'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTg5MDk0OTIsIm5iZiI6MTYxODkwOTQ5MiwianRpIjoiMzM2ZTk5YjAtM2ZkNC00NDQ4LTlhZDMtZTg1ZGRjYTI0ZWRkIiwiZXhwIjoxNjIxNTAxNDkyLCJpZGVudGl0eSI6IjB4ZTJDNjhDNThlQ2I0ODA3OGMzZjAzRmVjRUY1MTUzOGFBOGYxNDdBRSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.TUKOUTdJkGkr9TBYWBUKYgTSY1QPkyUFDRKRgiHtfeI',
+      //Authorization:
+      //  `Bearer ${authToken.access_token}`,
     },
   };
   if (data) {
