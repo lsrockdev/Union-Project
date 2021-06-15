@@ -6,6 +6,7 @@ export const actions = {
   SET_SHOW_VIDEOCALL_MODAL: 'SET_SHOW_VIDEOCALL_MODAL',
   SET_APPOINTMENT_BOOKED: 'SET_APPOINTMENT_BOOKED',
   SET_NEW_MESSAGE: 'SET_NEW_MESSAGE',
+  SET_AUTH_TOKEN: 'SET_AUTH_TOKEN',
 };
 
 export const reducer = (state, action) => {
@@ -46,6 +47,11 @@ export const reducer = (state, action) => {
       return {
         ...state,
         newMessage: action.newMessage,
+      };
+      case actions.SET_AUTH_TOKEN:
+      return {
+        ...state,
+        authInfo: action.authInfo,
       };
     default:
       return state;

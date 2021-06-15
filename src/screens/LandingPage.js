@@ -4,8 +4,14 @@ import {theme} from '../services/Common/theme';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import {Text, View, StyleSheet, FlatList} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import bip39 from 'react-native-bip39';
+import { hdPathString, localStorageKey } from '../web3/constants';
+import { STPupdateAccounts, STPupdateSeedPhrase } from '../actions/actions.js'
+import * as Utils from '../web3/utils';
+import {connect} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const LandingPage = ({navigation}) => {
+const LandingPage = ({navigation})=> {
   const options = [
     {
       icon: 'info',
@@ -122,7 +128,8 @@ const LandingPage = ({navigation}) => {
   );
 };
 
-export default LandingPage;
+  export default LandingPage;
+
 
 const styles = StyleSheet.create({
   itemTitle: {

@@ -9,6 +9,7 @@ const extraNodeModules = require('node-libs-browser');
 module.exports = {
   resolver: {
     extraNodeModules,
+    sourceExts: ['js', 'json', 'ts', 'tsx']
   },	
   transformer: {
     getTransformOptions: async () => ({

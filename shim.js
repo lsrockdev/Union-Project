@@ -27,4 +27,4 @@ Object.defineProperty(global, '_bitcore', { get(){ return undefined }, set(){} }
 
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
-require('crypto')
+//require('crypto')
