@@ -23,8 +23,10 @@ import {
   calcVeriCumu
 } from '../services/Common/CommonFunctions';
 
+var _arr_date = [];
 var _arr_uploads = [];
-var _arr_annotations = [];
+var _arr_tag_annotations = [];
+var _arr_text_annotations = [];
 var _arr_verifications = [];
 
 const Stats = () => {
@@ -42,13 +44,11 @@ const Stats = () => {
   const [cumuQuicrra, setCumuQuicrra] = useState(0);
 
   const [graphTitle, setGraphTitle] = useState("UPLOAD");
-  
   const [curChartState, setCurChartState] = useState('uploads');
 
   const curYear = Number(new Date().toISOString().replace(/T.*/, '').split('-')[0]);
 
-
-  const [curChartdata, setCurChartdata] = useState({
+ const [curChartdata, setCurChartdata] = useState({
     labels: [(curYear-1).toString(), curYear.toString()],
     datasets: [
       {
@@ -76,53 +76,18 @@ const Stats = () => {
   
   //Get uploads/annotations/verification cumulative points per date
   const sumCumuData = (response)=> {
-    let cumuData = [];
-    //calc uploads per day cumu
-    response.result.uploads.map(({date, value})=>{
-      let index = cumuData.findIndex(i=>i.date === date);
-      if (index == -1){
-        cumuData.push({date:date, value:calcUploadsCumu(value)});
-      } else {
-        cumuData[index].value += calcUploadsCumu(value);
-      } 
-    });
-
-    //calc verifications per day cumu
-    response.result.verifications.map(({date, value})=>{
-      let index = cumuData.findIndex(i=>i.date === date);
-      if (index == -1){
-        cumuData.push({date:date, value:calcVeriCumu(value)});
-      } else {
-        cumuData[index].value += calcVeriCumu(value);
-      } 
-    });
-
-    //calc text annotations per day cumu
-    response.result.text_annotations.map(({date, value})=>{
-      let index = cumuData.findIndex(i=>i.date === date);
-      if (index == -1){
-        cumuData.push({date:date, value:calcAnnoDescCumu(value)});
-      } else {
-        cumuData[index].value += calcAnnoDescCumu(value);
-      } 
-    });
-
-    //calc tag annotations per day cumu
-    response.result.tag_annotations.map(({date, value})=>{
-      let index = cumuData.findIndex(i=>i.date === date);
-      if (index == -1){
-        cumuData.push({date:date, value:calcAnnoTagCumu(value)});
-      } else {
-        cumuData[index].value += calcAnnoTagCumu(value);
-      } 
-    });
-
-    //split xData, yData for chart
+    var curCumuValue = 0;
     let _chartDataX = [];
     let _chartDataY = [];
-    cumuData.map(({date, value})=>{
-      _chartDataX.push(date.split("-")[2] || "");
-      _chartDataY.push(value);
+    //calc uploads per day cumu
+    response.result.dates.map((value, index)=>{
+      let upload = response.result.uploads[index];
+      let tag_annotation = response.result.tag_annotations[index];
+      let text_annotation = response.result.text_annotations[index];
+      let verifcation = response.result.verifications[index];
+      curCumuValue += calcUploadsCumu(upload) + calcVeriCumu(verifcation) + calcAnnoTagCumu(tag_annotation) + calcAnnoDescCumu(text_annotation);
+      _chartDataY.push(curCumuValue);
+      _chartDataX.push(value.split("-")[2] || "");
     });
 
     //remove duplicate date
@@ -154,30 +119,40 @@ const Stats = () => {
 
     let _chartDataX = [];
     let _chartDataY = [];
+    _arr_date.map((value)=>{
+      _chartDataX.push(value.split("-")[2]);
+    });
+    var curValue = 0;
 
     if (chartType == 'uploads') {
-      _arr_uploads.map(({date, value})=>{
-        _chartDataX.push(date);
-        _chartDataY.push(value);
+      _charDataY = [..._arr_uploads];
+      curValue = 0;
+      _arr_uploads.map((value, index)=>{
+        curValue += value;
+        _chartDataY.push(curValue);
       });
       setGraphTitle("UPLOAD");
     } else if (chartType == "annotations") {
-      _arr_annotations.map(({date, value})=>{
-        _chartDataX.push(date);
-        _chartDataY.push(value);
+      curValue = 0;
+      _arr_tag_annotations.map((value, index)=>{
+        curValue += value;
+        _chartDataY.push(curValue);
+      });
+
+      curValue = 0;
+      _arr_text_annotations.map((value, index)=>{
+        curValue += value;
+        _chartDataY[index] = curValue;
       });
       setGraphTitle("ANNOTATION");
     } else if (chartType == "verifications") {
-      _arr_verifications.map(({date, value})=>{
-        _chartDataX.push(date);
-        _chartDataY.push(value);
+      curValue = 0;
+      _arr_verifications.map((value, index)=>{
+        curValue += value;
+        _chartDataY[index] = curValue;
       });
       setGraphTitle("VERIFICATION");
     }
-    if(_chartDataX.length == 0) {
-      _chartDataX.push(new Date().toISOString().replace(/T.*/, '').split('-')[0]);
-    } 
-
     _chartDataX.push((Number(_chartDataX[_chartDataX.length - 1]) + 1).toString());
     let xData = [];
     _chartDataX.map((value, index)=>{
@@ -203,65 +178,45 @@ const Stats = () => {
 
   };
 
-
   const fetchOverall = async () => {
     try {
       dispatch({
         type: actions.SET_OVERALL
       });
+      const date = new Date();
 
-      const start = '01-01-2018';
-      const end = new Date().toISOString().replace(/T.*/, '').split('-').reverse().join('-');
+      const end = date.toISOString().replace(/T.*/, '').split('-').reverse().join('-');
+      date.setFullYear(date.getFullYear() - 1);
+      //const start = date.toISOString().replace(/T.*/, '').split('-').reverse().join('-');
+      const start = "14-05-2021";
       const response = await getOverall(start, end);
-
       if (response && response.result) {
         let sum_anno_description = 0;
         let sum_anno_tags = 0;
         let sum_anno = 0;
-
+        _arr_date = [];
         _arr_uploads = [];
-        _arr_annotations = [];
+        _arr_tag_annotations = [];
+        _arr_text_annotations = [];
         _arr_verifications = [];
 
+        _arr_date = [...response.result.dates];
+
         //retrieve total sumup
-        sum_anno_tags += response.result.tag_annotations.reduce((total, item) => total + Number(item.value), 0);
-        sum_anno_description += response.result.text_annotations.reduce((total, item) => total + Number(item.value), 0);
+        sum_anno_tags += response.result.tag_annotations.reduce((total, item) => total + Number(item), 0);
+        sum_anno_description += response.result.text_annotations.reduce((total, item) => total + Number(item), 0);
         sum_anno = sum_anno_tags + sum_anno_description;
         let sum_upload = 0;
-        sum_upload += response.result.uploads.reduce((total, item) => total + Number(item.value), 0);
+        sum_upload += response.result.uploads.reduce((total, item) => total + Number(item), 0);
         let sum_verification = 0;
-        sum_verification += response.result.verifications.reduce((total, item) => total + Number(item.value), 0);
+        sum_verification += response.result.verifications.reduce((total, item) => total + Number(item), 0);
 
 
         //collect chart data
-        response.result.uploads.map(({date, value})=>{
-          _arr_uploads.push({date:(date.split("-")[2] || ""), value:value});
-        });
-
-        response.result.verifications.map(({date, value})=>{
-          _arr_verifications.push({date:(date.split("-")[2] || ""), value:value});
-        });
-
-        let _total_annotations = [...response.result.text_annotations];
-
-        response.result.tag_annotations
-        .map(({date, value})=>{
-          let index = _total_annotations.findIndex(i=>i.date === date);
-          if (index == -1){
-            _total_annotations.push({date:date, value:value});
-          } else {
-            _total_annotations[index].value += value;
-          } 
-        });
-
-        _total_annotations
-        .map(({date, value})=>{
-          _arr_annotations.push({date:(date.split("-")[2] || ""), value:value});
-        });
-
-        _arr_annotations.sort((a, b) =>{
-          return Number(a.date) < Number(b.date) 
-        });
+        _arr_uploads = [...response.result.uploads];
+        _arr_verifications = [...response.result.verifications];
+        _arr_tag_annotations = [...response.result.tag_annotations];
+        _arr_text_annotations = [...response.result.text_annotations];
 
         setAnnotations(sum_anno);
         setUploads(sum_upload);
@@ -372,6 +327,7 @@ const Stats = () => {
                 decimalPlaces: 0,
                 fillShadowGradientOpacity: 1,
                 fillShadowGradient: '#a5c4f8',
+                //formatYLabel: (value) => Math.round(value / 1000),
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               }}
             />

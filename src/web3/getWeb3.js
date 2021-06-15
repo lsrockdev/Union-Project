@@ -34,7 +34,6 @@ export const getWeb3_ = new Promise((resolve, reject) => {
     //ropstenWeb3Instance: ropstenWeb3
 
   }
-  console.log("results:", results)
   resolve(store.dispatch(web3Initialized(results)))
 })
 
