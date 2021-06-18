@@ -4,6 +4,7 @@ import {settings as s} from './Settings';
 export const getAllImages = async () => {
   try {
     const response = await getData(s.taxonomy.getImages);
+    console.log("response?", response)
     return response;
   } catch (err) {
     return null;
@@ -32,6 +33,17 @@ export const getImage = async imageId => {
   try {
     const response = await getFile(
       s.taxonomy.getImage.replace('$[image_id]', imageId),
+    );
+    return response;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getLabelImage = async label => {
+  try {
+    const response = await getFile(
+      s.taxonomy.getLabelImage.replace('$[label_id]', label),
     );
     return response;
   } catch (err) {
