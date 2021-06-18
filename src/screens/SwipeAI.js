@@ -8,9 +8,9 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import {
   getAllImages,
   getImage,
+  getLabelImage,
   storeUserResponse,
 } from '../services/API/APIManager';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SwipeAI = () => {
@@ -37,8 +37,8 @@ const SwipeAI = () => {
         } else {
           setImages(response.result);
           setCurrentIndex(0);
-          fetchImage(response.result[0].image_id);
-          fetchImage(response.result[0].cutout_images[0], false);
+          fetchLabelImage(response.result[0].label);
+          fetchImage(response.result[0].image_id, false);
         }
       }
     } catch (error) {
@@ -75,7 +75,16 @@ const SwipeAI = () => {
     };
   };
 
-  const onSwipe = async userResponse => {
+  const fetchLabelImage = async (label) => {
+    const result = await getLabelImage(label);
+    const fileReaderInstance = new FileReader();
+    fileReaderInstance.readAsDataURL(result);
+    fileReaderInstance.onload = () => {
+      setMainImage(fileReaderInstance.result);
+    };
+  };
+
+  const onSwipe = async (userResponse) => {
     try {
       dispatch({
         type: actions.SET_PROGRESS_SETTINGS,
@@ -86,8 +95,13 @@ const SwipeAI = () => {
         image_id: images[currentIndex].image_id,
       };
       const response = await storeUserResponse(reqBody);
+      console.log('abcde', response);
       if (response && response.status && response.status === 'success') {
-        next(true);
+        if (userResponse === 'YES') {
+          next();
+        } else if (userResponse === 'NO') {
+          prev();
+        }
       } else {
         dispatch({
           type: actions.SET_ALERT_SETTINGS,
@@ -131,8 +145,8 @@ const SwipeAI = () => {
       });
       let allImages = images.slice();
       if (keepIndex) {
-        const allImages = images.filter(
-          img => img.image_id !== images[currentIndex].image_id,
+        allImages = images.filter(
+          (img) => img.image_id !== images[currentIndex].image_id,
         );
         // allImages = images.filter((img, index) => index !== currentIndex);
         setImages(allImages);
@@ -141,13 +155,69 @@ const SwipeAI = () => {
       if (allImages && allImages.length > 0) {
         if (index < allImages.length) {
           setCurrentIndex(index);
-          await fetchImage(allImages[index].image_id);
-          await fetchImage(allImages[index].cutout_images[0], false);
+          await fetchLabelImage(allImages[index].label);
+          await fetchImage(allImages[index].image_id, false);
+        } else {
+          index = allImages.length - 1;
+          setCurrentIndex(index);
+          await fetchLabelImage(allImages[index].label);
+          await fetchImage(allImages[index].image_id, false);
+        }
+        if (allImages.length <= 5) {
+          fetchImages();
+        }
+      } else {
+        setCurrentIndex(0);
+        setMainImage(null);
+        setCutoutImage(null);
+        fetchImages();
+      }
+    } catch (error) {
+      dispatch({
+        type: actions.SET_ALERT_SETTINGS,
+        alertSettings: {
+          show: true,
+          type: 'error',
+          title: 'Error Occured',
+          message:
+            'This Operation Could Not Be Completed. Please Try Again Later.',
+          showConfirmButton: true,
+          confirmText: 'Ok',
+        },
+      });
+    } finally {
+      dispatch({
+        type: actions.SET_PROGRESS_SETTINGS,
+        show: false,
+      });
+    }
+  };
+
+  const prev = async (keepIndex = false) => {
+    try {
+      dispatch({
+        type: actions.SET_PROGRESS_SETTINGS,
+        show: true,
+      });
+      let allImages = images.slice();
+      if (keepIndex) {
+        const allImages = images.filter(
+          (img) => img.image_id !== images[currentIndex].image_id,
+        );
+        // allImages = images.filter((img, index) => index !== currentIndex);
+        setImages(allImages);
+      }
+      const index = keepIndex ? currentIndex : currentIndex - 1;
+      if (allImages && allImages.length > 0) {
+        if (index >= 0) {
+          setCurrentIndex(index);
+          await fetchLabelImage(allImages[index].label);
+          await fetchImage(allImages[index].image_id, false);
         } else {
           const index = allImages.length - 1;
           setCurrentIndex(index);
-          await fetchImage(allImages[index].image_id);
-          await fetchImage(allImages[index].cutout_images[0], false);
+          await fetchLabelImage(allImages[index].label);
+          await fetchImage(allImages[index].image_id, false);
         }
         if (allImages.length <= 5) {
           fetchImages();
@@ -259,7 +329,7 @@ const SwipeAI = () => {
           onPress={() => onSwipe('YES')}>
           <MaterialCommunityIcon name="check-bold" size={35} color="#76b772" />
         </Ripple>
-        <Ripple
+        {/* <Ripple
           outerStyle={{
             borderWidth: 4,
             borderRadius: 25,
@@ -270,7 +340,7 @@ const SwipeAI = () => {
           innerStyle={{padding: 7}}
           onPress={() => next()}>
           <MaterialIcon name="arrow-right-alt" size={20} color="#dccd96" />
-        </Ripple>
+        </Ripple> */}
       </View>
     </View>
   );
