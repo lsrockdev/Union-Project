@@ -14,10 +14,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const LandingPage = ({navigation})=> {
   const options = [
     {
-      icon: 'info',
-      title: 'Info',
-      screen: 'About',
-      Icon: MaterialIcon,
+      title: 'My Stats',
+      screen: 'MyStats',
+      icon: 'analytics-sharp',
+      Icon: IonIcon,
     },
     {
       title: 'Learn',
@@ -32,16 +32,16 @@ const LandingPage = ({navigation})=> {
       Icon: MaterialIcon,
     },
     {
+      icon: 'info',
+      title: 'Info',
+      screen: 'About',
+      Icon: MaterialIcon,
+    },
+    {
       title: 'Wallet',
       screen: 'Wallet',
       icon: 'account-balance-wallet',
       Icon: MaterialIcon,
-    },
-    {
-      title: 'My Stats',
-      screen: 'MyStats',
-      icon: 'analytics-sharp',
-      Icon: IonIcon,
     },
   ];
 
@@ -87,7 +87,7 @@ const LandingPage = ({navigation})=> {
           }}>
           <MaterialIcon size={50} name="swipe" color={theme.APP_COLOR} />
         </View>
-        <Text style={styles.buttonText}>Work on images</Text>
+        <Text style={styles.buttonText}>Swipe AI</Text>
       </Ripple>
       <FlatList
         style={{flex: 1, paddingTop: '3%'}}

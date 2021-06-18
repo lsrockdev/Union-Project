@@ -106,18 +106,14 @@ const Loading = ({navigation}) => {
             fontSize: 19,
             fontWeight: '600',
           }}>
-          Creating wallet...
+          Powered by:
         </Text>
       </View>
-      <Text
-        style={{
-          color: theme.COLORS.WHITE,
-          fontFamily: 'Inter-Regular',
-          fontSize: 18,
-          fontWeight: '300',
-        }}>
-        free. quickly. automatically.
-      </Text>
+      <Image
+        style={styles.image}
+        resizeMode="contain"
+        source={require('../assets/ocean.png')}
+      />
     </View>
   );
 };

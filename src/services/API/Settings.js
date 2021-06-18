@@ -1,5 +1,7 @@
 export const settings = {
-  baseUrl: 'https://dev.dataunion.app:8082',
+  // development
+  baseUrl: 'https://dev.dataunion.app:8082/',
+  //production 
   // baseUrl: 'https://alpha.dataunion.app:4430',
   taxonomy: {
     getImages: '/api/v1/taxonomy/data',
