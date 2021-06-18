@@ -70,7 +70,7 @@ const Loading = ({navigation}) => {
               access_token: loginResponse.access_token
             });
           }
-      
+          console.log("loginResponse?", loginResponse)
           return loginResponse;
         }
       }

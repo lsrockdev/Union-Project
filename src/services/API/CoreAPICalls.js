@@ -7,10 +7,13 @@ const getEndpointUrl = ep => `${s.baseUrl}${ep}`;
 export const getData = async relativeUrl => {
   try {
     setLastActivity();
+    const authToken = await getAuthToken();
     const url = getEndpointUrl(relativeUrl);
     const config = {
-      method: 'get'
-      
+      method: 'get',
+      headers: {
+        Authorization: `Bearer ${authToken.access_token}`,
+      },
     };
     const response = await fetch(url, config);
     const result = await response.json();
@@ -52,15 +55,21 @@ export const getFile = async (relativeUrl) => {
     setLastActivity();
     const authToken = await getAuthToken();
     const url = getEndpointUrl(relativeUrl);
+    const refreshToken = await postUserData(s.auth.refreshToken, authToken.refresh_token);
+    await setAuthToken({
+      refresh_token: authToken.refresh_token,
+      access_token: refreshToken.access_token
+    });
     const config = {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
         Authorization:
-          `Bearer ${authToken.access_token}`,
+          `Bearer ${refreshToken.access_token}`,
       },
     };
     const response = await fetch(url, config);
+    console.log('bbb', response);
     const result = await response.blob();
     return result;
   } catch (err) {
@@ -74,14 +83,19 @@ export const postData = async (
   isFormData = false,
 ) => {
   setLastActivity();
-  //const authToken = await getAuthToken();
+  const authToken = await getAuthToken();
+  const refreshToken = await postUserData(s.auth.refreshToken, authToken.refresh_token);
+  await setAuthToken({
+    refresh_token: authToken.refresh_token,
+    access_token: refreshToken.access_token
+  });
   const url = getEndpointUrl(relativeUrl);
   const config = {
     method: 'post',
     headers: {
-      'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
-      //Authorization:
-      //  `Bearer ${authToken.access_token}`,
+      'Content-Type': 'application/json',
+      Authorization:
+       `Bearer ${refreshToken.access_token}`,
     },
   };
   if (data) {
