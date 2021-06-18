@@ -11,7 +11,6 @@ import {
   getLabelImage,
   storeUserResponse,
 } from '../services/API/APIManager';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SwipeAI = () => {
@@ -85,7 +84,7 @@ const SwipeAI = () => {
     };
   };
 
-  const onSwipe = async userResponse => {
+  const onSwipe = async (userResponse) => {
     try {
       dispatch({
         type: actions.SET_PROGRESS_SETTINGS,
@@ -146,8 +145,8 @@ const SwipeAI = () => {
       });
       let allImages = images.slice();
       if (keepIndex) {
-        const allImages = images.filter(
-          img => img.image_id !== images[currentIndex].image_id,
+        allImages = images.filter(
+          (img) => img.image_id !== images[currentIndex].image_id,
         );
         // allImages = images.filter((img, index) => index !== currentIndex);
         setImages(allImages);
@@ -159,7 +158,7 @@ const SwipeAI = () => {
           await fetchLabelImage(allImages[index].label);
           await fetchImage(allImages[index].image_id, false);
         } else {
-          const index = allImages.length - 1;
+          index = allImages.length - 1;
           setCurrentIndex(index);
           await fetchLabelImage(allImages[index].label);
           await fetchImage(allImages[index].image_id, false);
@@ -203,7 +202,7 @@ const SwipeAI = () => {
       let allImages = images.slice();
       if (keepIndex) {
         const allImages = images.filter(
-          img => img.image_id !== images[currentIndex].image_id,
+          (img) => img.image_id !== images[currentIndex].image_id,
         );
         // allImages = images.filter((img, index) => index !== currentIndex);
         setImages(allImages);
@@ -316,7 +315,7 @@ const SwipeAI = () => {
             marginRight: '-0.5%',
           }}
           innerStyle={{padding: 10}}
-          onPress={() => onSwipe('NO') }>
+          onPress={() => onSwipe('NO')}>
           <MaterialCommunityIcon name="close-thick" size={35} color="#cc1c26" />
         </Ripple>
         <Ripple
@@ -327,7 +326,7 @@ const SwipeAI = () => {
             marginLeft: '-0.5%',
           }}
           innerStyle={{padding: 10}}
-          onPress={() => onSwipe('YES') }>
+          onPress={() => onSwipe('YES')}>
           <MaterialCommunityIcon name="check-bold" size={35} color="#76b772" />
         </Ripple>
         {/* <Ripple
